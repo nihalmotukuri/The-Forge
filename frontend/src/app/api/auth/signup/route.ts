@@ -22,7 +22,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const validatedData = authValidatorSignup.safeParse({ email, password,username,confirmpassword });
+    const validatedData = authValidatorSignup.safeParse({
+      email,
+      password,
+      username,
+      confirmpassword,
+    });
     if (!validatedData.success) {
       return NextResponse.json(
         { message: "Invalid data", errors: validatedData.error },
@@ -31,7 +36,15 @@ export async function POST(req: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !user.otp || !user.otpExpiry) {
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "OTP not sent or user does not exist" },
+        { status: 400 }
+      );
+    }
+
+    if (!user.otp || !user.otpExpiry) {
       return NextResponse.json(
         { message: "OTP not sent or expired" },
         { status: 400 }
@@ -51,6 +64,7 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const updatedUser = await prisma.user.update({
       where: { email },
       data: {
