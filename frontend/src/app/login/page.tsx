@@ -48,19 +48,13 @@ const page = () => {
                     <input
                         className='text-md bg-[#202020] px-8 py-4 border-y border-neutral-700 w-full placeholder-white/28'
                         type="text"
-                        placeholder='Create Password *'
-                    />
-
-                    <input
-                        className='text-md bg-[#202020] px-8 py-4 border-y border-neutral-700 w-full placeholder-white/28'
-                        type="text"
-                        placeholder='Confirm Password *'
+                        placeholder='Password *'
                     />
 
                     <div className="flex items-center justify-center gap-2">
-                        Already have an account?
-                        <Link href={'/login'} className="text-[#00f0ff] flex items-center underline">
-                            Sign in <TiArrowRight className="text-xl" />
+                        {"Don't have an account?"}
+                        <Link href={'/register'} className="text-[#00f0ff] flex items-center underline">
+                             Register <TiArrowRight className="text-xl" />
                         </Link>
                     </div>
 
@@ -68,7 +62,7 @@ const page = () => {
                         className='bg-[#e3ff04] w-full text-sm text-black font-semibold px-5 py-3 rounded-xl mt-2'
                         type='submit'
                     >
-                        REGISTER
+                        LOGIN
                     </button>
                 </div>
             </form>
