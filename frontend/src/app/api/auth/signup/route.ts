@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { authValidatorSignup } from "@/zod/authValidations";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import sendWelcomeEmail  from "@/util/sendWelcomeEmail";
 
 export async function POST(req: NextRequest) {
   try {
@@ -74,8 +76,21 @@ export async function POST(req: NextRequest) {
         otpExpiry: null,
       },
     });
+    const token = jwt.sign(
+      { id: updatedUser.id, email: updatedUser.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1d" }
+    );
+    const cookieOptions = {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax" as const,
+      maxAge: 24 * 60 * 60, 
+      path: "/",
+    };
 
-    return NextResponse.json({
+
+    const res = NextResponse.json({
       message: "User verified and signup complete",
       user: {
         id: updatedUser.id,
@@ -83,6 +98,12 @@ export async function POST(req: NextRequest) {
         email: updatedUser.email,
       },
     });
+      sendWelcomeEmail(updatedUser.email);
+
+
+    res.cookies.set("auth-token", token, cookieOptions);
+
+    return res;
   } catch (error) {
     console.error("Signup error:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });

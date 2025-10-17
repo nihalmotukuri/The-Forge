@@ -34,3 +34,7 @@ export const authValidatorSignin  = z.object({
     .regex(/[0-9]/, { message: "Password must contain at least one number" })
     .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character" }),
 })
+
+export const authValidatorEmail = z.object({
+    email : z.email({message: "Invaid email address"}).trim(),
+})

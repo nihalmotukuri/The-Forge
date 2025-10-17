@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { sendVerificationEmail } from "@/util/EmailVerification";
+import { authValidatorEmail } from "@/zod/authValidations";
+
 
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
+
+    const validatedData = authValidatorEmail.safeParse({ email });
+    if (!validatedData.success) {
+      return NextResponse.json(
+        { message: "Invalid email", errors: validatedData.error.message },
+        { status: 400 }
+      );
+    }
 
     if (!email) {
       return NextResponse.json({ message: "Email is required" }, { status: 400 });
