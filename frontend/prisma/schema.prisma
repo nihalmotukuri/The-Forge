@@ -1,0 +1,41 @@
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+  // output = "@prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id         String   @id @default(uuid())
+  username   String
+  email      String   @unique
+  password   String
+  otp        String? 
+  otpExpiry  DateTime?
+  profilePic String? 
+  bio        String? 
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+
+model Game {
+  id String @id @default(uuid())
+  gameName String 
+  category String 
+  rating Float @default(3.75)
+  description String?
+  platforms   String[]
+  developer   String?
+  publisher   String?
+  imageUrl    String?
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
