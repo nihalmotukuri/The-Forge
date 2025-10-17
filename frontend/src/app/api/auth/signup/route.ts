@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { authValidatorSignup } from "@/zod/authValidations";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import sendWelcomeEmail  from "@/util/sendWelcomeEmail";
+import sendWelcomeEmail from "@/util/sendWelcomeEmail";
 
 export async function POST(req: NextRequest) {
   try {
@@ -66,6 +66,15 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    let profilePic: string | undefined;
+    if (username.split(" ").length > 1) {
+      profilePic = username
+        .split(" ")
+        .map((n: string) => n.charAt(0).toUpperCase())
+        .join("");
+    } else {
+      profilePic = username.charAt(0).toUpperCase();
+    }
 
     const updatedUser = await prisma.user.update({
       where: { email },
@@ -74,6 +83,7 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
         otp: null,
         otpExpiry: null,
+        profilePic,
       },
     });
     const token = jwt.sign(
@@ -85,10 +95,9 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       secure: false,
       sameSite: "lax" as const,
-      maxAge: 24 * 60 * 60, 
+      maxAge: 24 * 60 * 60,
       path: "/",
     };
-
 
     const res = NextResponse.json({
       message: "User verified and signup complete",
@@ -98,8 +107,7 @@ export async function POST(req: NextRequest) {
         email: updatedUser.email,
       },
     });
-      sendWelcomeEmail(updatedUser.email);
-
+    sendWelcomeEmail(updatedUser.email);
 
     res.cookies.set("auth-token", token, cookieOptions);
 
