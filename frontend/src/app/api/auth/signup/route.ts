@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       },
     });
     const token = jwt.sign(
-      { id: updatedUser.id, email: updatedUser.email },
+      { uid: updatedUser.id, email: updatedUser.email },
       process.env.JWT_SECRET!,
       { expiresIn: "1d" }
     );

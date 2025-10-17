@@ -4,7 +4,7 @@ export const authValidatorSignup = z.object({
   username: z
     .string()
     .trim()
-    .min(6, { message: "The username should contain at least 6 characters" })
+    .min(4, { message: "The username should contain at least 6 characters" })
     .max(20, { message: "Username should contain at most 20 characters" }),
     
   email: z
